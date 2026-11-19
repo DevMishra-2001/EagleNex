@@ -1,7 +1,8 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Footer from "./components/Footer";
-import { About, CTA, Marquee, Process, Services, Testimonials } from "./components/Sections";
+import CTA from "./components/CTA";
+import { About, Marquee, Process, Services, Testimonials } from "./components/Sections";
 
 function App() {
   return (

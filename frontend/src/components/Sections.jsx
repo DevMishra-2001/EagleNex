@@ -1,8 +1,7 @@
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
 import {
   ArrowRight,
-  ArrowUpRight,
   Brain,
   ChartBar,
   Check,
@@ -20,8 +19,9 @@ import {
 import Reveal from "./Reveal";
 import TiltCard from "./TiltCard";
 import Perspective from "./Perspective";
+import Particle from "./Particle";
 
-const StackScene = lazy(() => import("./three/StackScene"));
+const OrbitScene = lazy(() => import("./three/OrbitScene"));
 
 /* ------------------------------ Trusted-by marquee ------------------------------ */
 const brands = ["Nova", "Quantum", "Skyline", "Vertex", "Pulse", "Orbit", "Zenith", "Apex"];
@@ -61,7 +61,7 @@ const services = [
 export function Services() {
   return (
     <section id="services" className="relative py-28">
-      <div className="container-x">
+      <div className="container-x relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="eyebrow">What we do</span>
           <h2 className="section-title mt-5">
@@ -116,11 +116,11 @@ function AboutVisual() {
   const seen = useInView(ref, { once: true, margin: "200px" });
   const visible = useInView(ref, { margin: "100px" });
   return (
-    <div ref={ref} className="relative mx-auto aspect-square w-full max-w-xl">
-      <div className="pointer-events-none absolute inset-[20%] rounded-full bg-brand-violet/25 blur-[90px]" />
+    <div ref={ref} className="relative aspect-square w-full sm:aspect-[5/4]">
+      <div className="pointer-events-none absolute inset-[25%] rounded-full bg-brand-violet/25 blur-[90px]" />
       {seen && (
         <Suspense fallback={null}>
-          <StackScene active={visible} />
+          <OrbitScene active={visible} />
         </Suspense>
       )}
     </div>
@@ -131,13 +131,13 @@ export function About() {
   return (
     <section id="about" className="relative overflow-hidden py-28">
       <div className="pointer-events-none absolute right-0 top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-brand-violet/15 blur-[140px]" />
-      <div className="container-x grid items-center gap-16 lg:grid-cols-2">
-        {/* Real 3D floating app screens */}
-        <Reveal>
+      <div className="container-x grid items-center gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-6">
+        {/* 3D EagleNex orbit */}
+        <Reveal className="lg:-ml-10">
           <AboutVisual />
         </Reveal>
 
-        <div>
+        <div className="max-w-xl">
           <Reveal>
             <span className="eyebrow">Why EagleNex</span>
             <h2 className="section-title mt-5">
@@ -159,16 +159,16 @@ export function About() {
             </ul>
           </Reveal>
 
-          <div className="mt-12 grid grid-cols-2 gap-4">
-            {stats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 0.1}>
-                <div className="glass rounded-2xl p-6">
-                  <p className="font-display text-4xl font-semibold tracking-tight text-white">{s.value}</p>
-                  <p className="mt-1 text-sm text-zinc-500">{s.label}</p>
+          <Reveal delay={0.1}>
+            <div className="mt-12 grid grid-cols-2 gap-y-8 border-t border-white/10 pt-8 sm:grid-cols-4">
+              {stats.map((s, i) => (
+                <div key={s.label} className={`pr-4 ${i > 0 ? "sm:border-l sm:border-white/10 sm:pl-5" : ""}`}>
+                  <p className="font-display text-3xl font-semibold tracking-tight text-white">{s.value}</p>
+                  <p className="mt-1 text-sm leading-snug text-zinc-500">{s.label}</p>
                 </div>
-              </Reveal>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -176,16 +176,30 @@ export function About() {
 }
 
 /* ---------------------------------- Process ---------------------------------- */
+// emoji = particle shape shown for that step
 const steps = [
-  { icon: Lightbulb, title: "Discover", desc: "We dive deep into your goals, users and market." },
-  { icon: PenTool, title: "Design", desc: "Wireframes and stunning UI that tell your story." },
-  { icon: Code, title: "Develop", desc: "Clean, scalable code with weekly demos." },
-  { icon: Target, title: "Launch & Grow", desc: "Go live, measure, optimize — and scale." },
+  { icon: Lightbulb, emoji: "💡", title: "Discover", desc: "We dive deep into your goals, users and market." },
+  { icon: PenTool, emoji: "✏️", title: "Design", desc: "Wireframes and stunning UI that tell your story." },
+  { icon: Code, emoji: "💻", title: "Develop", desc: "Clean, scalable code with weekly demos." },
+  { icon: Target, emoji: "🎯", title: "Launch & Grow", desc: "Go live, measure, optimize — and scale." },
 ];
+const stepShapes = steps.map((s) => s.emoji);
 
 export function Process() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { margin: "-20% 0px" });
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  // auto-advance through the steps while visible
+  useEffect(() => {
+    if (!inView || paused) return;
+    const id = setInterval(() => setActive((a) => (a + 1) % steps.length), 3200);
+    return () => clearInterval(id);
+  }, [inView, paused]);
+
   return (
-    <section id="process" className="relative py-28">
+    <section id="process" ref={ref} className="relative py-28">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="eyebrow">How we work</span>
@@ -194,21 +208,70 @@ export function Process() {
           </h2>
         </Reveal>
 
-        <div className="relative mt-16 grid gap-6 md:grid-cols-4">
-          <div className="absolute left-0 right-0 top-10 hidden h-px bg-gradient-to-r from-transparent via-white/20 to-transparent md:block" />
-          {steps.map((s, i) => (
-            <Reveal key={s.title} delay={i * 0.12} className="relative text-center">
-              <div className="relative mx-auto grid h-20 w-20 place-items-center">
-                <span className="absolute inset-0 animate-spin-slow rounded-full border border-dashed border-brand-cyan/40" />
-                <span className="grid h-14 w-14 place-items-center rounded-full bg-ink-800 ring-1 ring-white/10">
-                  <s.icon className="h-6 w-6 text-brand-cyan" />
-                </span>
-              </div>
-              <p className="mt-6 font-mono text-xs text-zinc-500">STEP 0{i + 1}</p>
-              <h3 className="mt-2 font-display text-xl font-semibold text-white">{s.title}</h3>
-              <p className="mt-2 text-zinc-400">{s.desc}</p>
-            </Reveal>
-          ))}
+        <div className="mt-16 grid items-center gap-10 lg:grid-cols-2">
+          {/* Morphing particle object */}
+          <div className="relative mx-auto aspect-square w-full max-w-[520px]">
+            <div className="pointer-events-none absolute inset-[18%] rounded-full bg-brand-violet/20 blur-[90px]" />
+            <span className="absolute left-1/2 top-4 -translate-x-1/2 font-mono text-xs text-zinc-500">
+              STEP 0{active + 1} / 0{steps.length}
+            </span>
+            <Particle shapes={stepShapes} index={active} count={6000} className="h-full w-full" />
+          </div>
+
+          {/* Steps list */}
+          <div className="space-y-3" onMouseLeave={() => setPaused(false)}>
+            {steps.map((s, i) => {
+              const on = i === active;
+              return (
+                <Reveal key={s.title} delay={i * 0.08}>
+                  <button
+                    onMouseEnter={() => {
+                      setActive(i);
+                      setPaused(true);
+                    }}
+                    onClick={() => setActive(i)}
+                    className={`group relative flex w-full items-start gap-5 overflow-hidden rounded-2xl border p-6 text-left transition-all duration-500 ${
+                      on
+                        ? "border-white/15 bg-white/[0.06]"
+                        : "border-transparent bg-transparent hover:bg-white/[0.03]"
+                    }`}
+                  >
+                    {/* progress bar for the active step */}
+                    {on && !paused && (
+                      <span
+                        key={`bar-${active}`}
+                        className="absolute bottom-0 left-0 h-px w-full origin-left animate-[grow_3.2s_linear] bg-gradient-to-r from-brand-violet to-brand-cyan"
+                      />
+                    )}
+                    <span
+                      className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl transition-colors duration-500 ${
+                        on ? "bg-gradient-to-br from-brand-violet to-brand-cyan text-white" : "bg-white/5 text-zinc-500"
+                      }`}
+                    >
+                      <s.icon className="h-5 w-5" />
+                    </span>
+                    <span>
+                      <span className="font-mono text-xs text-zinc-500">STEP 0{i + 1}</span>
+                      <span
+                        className={`mt-1 block font-display text-2xl font-semibold tracking-tight transition-colors ${
+                          on ? "text-white" : "text-zinc-500"
+                        }`}
+                      >
+                        {s.title}
+                      </span>
+                      <span
+                        className={`grid transition-all duration-500 ${
+                          on ? "mt-2 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                        }`}
+                      >
+                        <span className="overflow-hidden text-zinc-400">{s.desc}</span>
+                      </span>
+                    </span>
+                  </button>
+                </Reveal>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -225,7 +288,7 @@ const testimonials = [
 export function Testimonials() {
   return (
     <section id="testimonials" className="relative py-28">
-      <div className="container-x">
+      <div className="container-x relative">
         <Reveal className="mx-auto max-w-2xl text-center">
           <span className="eyebrow">Testimonials</span>
           <h2 className="section-title mt-5">
@@ -264,44 +327,3 @@ export function Testimonials() {
   );
 }
 
-/* ------------------------------------ CTA ------------------------------------ */
-export function CTA() {
-  return (
-    <section id="contact" className="relative py-28">
-      <div className="container-x">
-        <Reveal>
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-gradient-to-br from-brand-violet/30 via-ink-800 to-brand-cyan/20 px-6 py-20 text-center sm:px-16">
-            <div className="grid-bg pointer-events-none absolute inset-0" />
-            <div className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-brand-violet/40 blur-[100px]" />
-            <div className="relative">
-              <span className="eyebrow">
-                Free consultation
-              </span>
-              <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-white sm:text-6xl lg:text-7xl">
-                Got an idea? Let&apos;s make it <span className="accent">real.</span>
-              </h2>
-              <p className="mx-auto mt-6 max-w-xl text-zinc-300">
-                Drop your email — we&apos;ll reply within 24 hours with a plan and a quote.
-              </p>
-
-              <form
-                onSubmit={(e) => e.preventDefault()}
-                className="mx-auto mt-10 flex max-w-lg flex-col gap-3 rounded-full sm:flex-row sm:border sm:border-white/15 sm:bg-white/5 sm:p-1.5 sm:backdrop-blur"
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email"
-                  className="flex-1 rounded-full border border-white/15 bg-white/5 px-6 py-3 text-white placeholder:text-zinc-500 focus:outline-none sm:border-0 sm:bg-transparent"
-                />
-                <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-ink-950 transition hover:bg-zinc-200">
-                  Get Started <ArrowUpRight className="h-4 w-4" />
-                </button>
-              </form>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}

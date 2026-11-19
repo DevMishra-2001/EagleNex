@@ -29,6 +29,10 @@ export default {
         "spin-slow": {
           to: { transform: "rotate(360deg)" },
         },
+        grow: {
+          from: { transform: "scaleX(0)" },
+          to: { transform: "scaleX(1)" },
+        },
         shimmer: {
           "0%": { backgroundPosition: "0% 50%" },
           "100%": { backgroundPosition: "200% 50%" },
