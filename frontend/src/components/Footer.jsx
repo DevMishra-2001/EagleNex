@@ -71,8 +71,9 @@ const socials = [
 ];
 
 export default function Footer() {
+  // id="site-footer" is watched by the Navbar: header slides away once the footer starts
   return (
-    <footer className="relative border-t border-white/5 bg-ink-900">
+    <footer id="site-footer" className="relative border-t border-white/5 bg-ink-900">
       {/* subtle top glow */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-violet/60 to-transparent" />
 

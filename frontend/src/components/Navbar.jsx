@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import { useElementVisible } from "../hooks/useElementVisible";
 
 const links = [
   { label: "Home", id: "home" },
@@ -16,6 +17,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("home");
+  // true as soon as the footer's top edge enters the viewport
+  const footerVisible = useElementVisible("site-footer");
 
   // Background change on scroll
   useEffect(() => {
@@ -45,10 +48,12 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Footer screen me aate hi poora header upar slide ho jaata hai */}
       <header
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        aria-hidden={footerVisible && !open}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           scrolled ? "py-3" : "py-5"
-        }`}
+        } ${footerVisible && !open ? "pointer-events-none -translate-y-[130%] opacity-0" : "translate-y-0 opacity-100"}`}
       >
         <div className="container-x">
           <nav
