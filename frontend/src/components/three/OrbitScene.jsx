@@ -4,6 +4,7 @@ import { Html } from "@react-three/drei";
 import { Brain, ChartBar, Cloud, Code, Palette, Smartphone } from "lucide-react";
 import * as THREE from "three";
 import { Particles } from "./ParticleShape";
+import { useTheme } from "../../hooks/useTheme";
 
 /* Services orbiting the EagleNex core — edit labels/icons here */
 const chips = [
@@ -80,7 +81,7 @@ function Chip({ chip, index, total }) {
             className="grid h-7 w-7 place-items-center rounded-full"
             style={{ background: chip.color, boxShadow: `0 0 18px ${chip.color}` }}
           >
-            <Icon className="h-3.5 w-3.5" />
+            <Icon className="h-3.5 w-3.5 text-pure" />
           </span>
           {chip.label}
         </div>
@@ -92,6 +93,7 @@ function Chip({ chip, index, total }) {
 function Scene({ mouse, active }) {
   const tilt = useRef();
   const { viewport } = useThree();
+  const { isDark } = useTheme();
   // shrink the orbit so the chips (≈0.9 units wide) never leave the canvas
   const fit = Math.min(1, (viewport.width / 2 - 0.9) / RX, (viewport.height / 2 - 0.4) / (RX * 0.55));
   useFrame((_, delta) => {
@@ -117,10 +119,10 @@ function Scene({ mouse, active }) {
         />
       </group>
 
-      <OrbitPath />
-      <OrbitPath scale={1.25} opacity={0.15} color="#c4b5fd" />
-      <Comet speed={0.6} color="#67e8f9" />
-      <Comet speed={-0.4} offset={2} color="#f0abfc" scale={1.25} />
+      <OrbitPath color={isDark ? "#67e8f9" : "#0891b2"} opacity={isDark ? 0.35 : 0.45} />
+      <OrbitPath scale={1.25} opacity={isDark ? 0.15 : 0.25} color={isDark ? "#c4b5fd" : "#7c3aed"} />
+      <Comet speed={0.6} color={isDark ? "#67e8f9" : "#0891b2"} />
+      <Comet speed={-0.4} offset={2} color={isDark ? "#f0abfc" : "#c026d3"} scale={1.25} />
 
       {chips.map((c, i) => (
         <Chip key={c.label} chip={c} index={i} total={chips.length} />

@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { useTheme } from "../../hooks/useTheme";
 
 /* ==================================================================
    1) Shape sampling — draw the eagle (emoji) on a hidden canvas and
@@ -86,6 +87,7 @@ const eagleVertex = /* glsl */ `
   uniform float uScroll;
   uniform vec3 uMouse;
   uniform float uSize;
+  uniform float uLight; // 0 = dark theme, 1 = light theme
   varying vec3 vColor;
   varying float vAlpha;
 
@@ -128,8 +130,10 @@ const eagleVertex = /* glsl */ `
     gl_PointSize = uSize * (0.55 + aBright * 0.9 + force * 1.5) / -mv.z;
 
     vColor = palette(clamp(position.x / 6.0 + 0.5 + aRand * 0.15, 0.0, 1.0));
-    vColor = mix(vColor, vec3(1.0), aBright * 0.45 + force * 0.5);
-    vAlpha = (0.28 + aBright * 0.55) * (1.0 - uScroll * 0.85);
+    // highlights go towards white on dark bg, towards a deeper tone on light bg
+    vec3 hi = mix(vec3(1.0), vColor * 0.45, uLight);
+    vColor = mix(vColor, hi, aBright * 0.45 + force * 0.5);
+    vAlpha = (0.28 + aBright * 0.55) * (1.0 - uScroll * 0.85) * (1.0 + uLight * 0.7);
   }
 `;
 const eagleFragment = /* glsl */ `
@@ -163,9 +167,11 @@ function ParticleEagle() {
         uScroll: { value: 0 },
         uMouse: { value: new THREE.Vector3(99, 99, 0) },
         uSize: { value: 30 * Math.min(gl.getPixelRatio(), 2) },
+        uLight: { value: 0 },
       },
     };
   }, [gl]);
+  const { isDark } = useTheme();
 
   const mouseWorld = useMemo(() => new THREE.Vector3(), []);
 
@@ -173,6 +179,7 @@ function ParticleEagle() {
     const u = mat.current.uniforms;
     u.uTime.value = clock.getElapsedTime();
     u.uProgress.value = Math.min(u.uProgress.value + delta * 0.45, 1);
+    u.uLight.value = THREE.MathUtils.damp(u.uLight.value, isDark ? 0 : 1, 6, delta);
 
     const scroll = Math.min(window.scrollY / window.innerHeight, 1);
     u.uScroll.value = THREE.MathUtils.damp(u.uScroll.value, scroll, 6, delta);
@@ -197,7 +204,7 @@ function ParticleEagle() {
           uniforms={uniforms}
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
         />
       </points>
       <HaloRing />
@@ -224,10 +231,18 @@ function makeRing() {
 function HaloRing() {
   const ref = useRef();
   const geometry = useMemo(() => makeRing(), []);
+  const { isDark } = useTheme();
   useFrame((_, d) => (ref.current.rotation.z += d * 0.08));
   return (
     <points ref={ref} geometry={geometry}>
-      <pointsMaterial size={0.025} color="#67e8f9" transparent opacity={0.5} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <pointsMaterial
+        size={0.025}
+        color={isDark ? "#67e8f9" : "#0891b2"}
+        transparent
+        opacity={isDark ? 0.5 : 0.6}
+        depthWrite={false}
+        blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
+      />
     </points>
   );
 }
@@ -282,6 +297,7 @@ function ParticleWave() {
     return g;
   }, []);
   const uniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
+  const { isDark } = useTheme();
   useFrame(({ clock }) => (mat.current.uniforms.uTime.value = clock.getElapsedTime()));
 
   return (
@@ -293,7 +309,7 @@ function ParticleWave() {
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
       />
     </points>
   );

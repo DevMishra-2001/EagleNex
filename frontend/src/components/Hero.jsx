@@ -43,7 +43,7 @@ export default function Hero() {
             animate="show"
             className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 text-sm text-zinc-300 backdrop-blur transition hover:border-white/20"
           >
-            <span className="rounded-full bg-gradient-to-r from-brand-violet to-brand-cyan px-2.5 py-0.5 text-xs font-semibold text-white">
+            <span className="rounded-full bg-gradient-to-r from-brand-violet to-brand-cyan px-2.5 py-0.5 text-xs font-semibold text-pure">
               New
             </span>
             AI-powered products, built in weeks

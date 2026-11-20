@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { randoms, sampleEmoji, scatter } from "./sampleEmoji";
+import { useTheme } from "../../hooks/useTheme";
 
 const vertex = /* glsl */ `
   attribute vec3 aFrom;
@@ -16,6 +17,7 @@ const vertex = /* glsl */ `
   uniform vec3 uC1;
   uniform vec3 uC2;
   uniform vec3 uC3;
+  uniform float uLight; // 0 = dark theme, 1 = light theme
   varying vec3 vColor;
   varying float vAlpha;
 
@@ -51,8 +53,9 @@ const vertex = /* glsl */ `
 
     float g = clamp(position.x / 4.0 + 0.5 + aRand * 0.2 - 0.1, 0.0, 1.0);
     vColor = g < 0.5 ? mix(uC1, uC2, g * 2.0) : mix(uC2, uC3, (g - 0.5) * 2.0);
-    vColor = mix(vColor, vec3(1.0), b * 0.4 + force * 0.5 + beat * 0.3);
-    vAlpha = 0.3 + b * 0.55;
+    vec3 hi = mix(vec3(1.0), vColor * 0.45, uLight);
+    vColor = mix(vColor, hi, b * 0.4 + force * 0.5 + beat * 0.3);
+    vAlpha = (0.3 + b * 0.55) * (1.0 + uLight * 0.7);
   }
 `;
 
@@ -94,9 +97,11 @@ export function Particles({ shapes, index, count, worldSize, colors, pulse, mous
         uC1: { value: new THREE.Color(colors[0]) },
         uC2: { value: new THREE.Color(colors[1]) },
         uC3: { value: new THREE.Color(colors[2]) },
+        uLight: { value: 0 },
       },
     };
   }, [targets, count, worldSize, colors, pulse]);
+  const { isDark } = useTheme();
 
   // Morph to a new shape whenever `index` changes
   const prevIndex = useRef(index);
@@ -121,6 +126,7 @@ export function Particles({ shapes, index, count, worldSize, colors, pulse, mous
     u.uTime.value = t;
     if (active) started.current = true;
     if (started.current) u.uProgress.value = Math.min(u.uProgress.value + delta * 0.7, 1);
+    u.uLight.value = THREE.MathUtils.damp(u.uLight.value, isDark ? 0 : 1, 6, delta);
 
     const m = mouse.current;
     u.uMouse.value.x += (m.x * worldSize * 0.75 - u.uMouse.value.x) * 0.2;
@@ -141,7 +147,7 @@ export function Particles({ shapes, index, count, worldSize, colors, pulse, mous
           uniforms={uniforms}
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={isDark ? THREE.AdditiveBlending : THREE.NormalBlending}
         />
       </points>
     </group>

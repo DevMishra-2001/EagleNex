@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   { label: "Home", id: "home" },
@@ -83,15 +84,7 @@ export default function Navbar() {
             </ul>
 
             <div className="flex items-center gap-2">
-              <a
-                href="#contact"
-                className="group hidden items-center gap-2 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-semibold text-ink-950 transition hover:bg-zinc-200 sm:inline-flex"
-              >
-                Get in touch
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-ink-950 text-white transition-transform group-hover:rotate-45">
-                  <ArrowUpRight className="h-4 w-4" />
-                </span>
-              </a>
+              <ThemeToggle />
 
               {/* Animated hamburger */}
               <button
@@ -143,13 +136,10 @@ export default function Navbar() {
                 </motion.li>
               ))}
             </ul>
-            <a
-              href="#contact"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-center gap-2 rounded-full bg-white py-4 font-semibold text-ink-950"
-            >
-              Get in touch <ArrowUpRight className="h-4 w-4" />
-            </a>
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-3">
+              <span className="font-medium text-zinc-300">Appearance</span>
+              <ThemeToggle />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

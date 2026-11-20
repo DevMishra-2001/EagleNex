@@ -80,7 +80,7 @@ export function Services() {
                 <span
                   className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${s.color} shadow-lg`}
                 >
-                  <s.icon className="h-7 w-7 text-white" />
+                  <s.icon className="h-7 w-7 text-pure" />
                 </span>
                 <h3 className="mt-6 font-display text-xl font-semibold text-white">{s.title}</h3>
                 <p className="mt-3 leading-relaxed text-zinc-400">{s.desc}</p>
@@ -245,7 +245,7 @@ export function Process() {
                     )}
                     <span
                       className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl transition-colors duration-500 ${
-                        on ? "bg-gradient-to-br from-brand-violet to-brand-cyan text-white" : "bg-white/5 text-zinc-500"
+                        on ? "bg-gradient-to-br from-brand-violet to-brand-cyan text-pure" : "bg-white/5 text-zinc-500"
                       }`}
                     >
                       <s.icon className="h-5 w-5" />
@@ -309,7 +309,7 @@ export function Testimonials() {
                 </div>
                 <p className="mt-4 leading-relaxed text-zinc-300">&ldquo;{t.text}&rdquo;</p>
                 <div className="mt-6 flex items-center gap-3">
-                  <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-brand-violet to-brand-cyan font-display font-bold text-white">
+                  <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-brand-violet to-brand-cyan font-display font-bold text-pure">
                     {t.name[0]}
                   </span>
                   <div>

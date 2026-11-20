@@ -8,12 +8,25 @@ export default {
         display: ['"Sora"', '"Plus Jakarta Sans"', "sans-serif"],
         serif: ['"Instrument Serif"', "Georgia", "serif"],
       },
+      // Theme-aware colours: values come from CSS variables in index.css
+      // (dark = default, [data-theme="light"] flips them).
       colors: {
         ink: {
-          950: "#05050a",
-          900: "#0a0a14",
-          800: "#11111f",
-          700: "#1a1a2e",
+          950: "rgb(var(--ink-950) / <alpha-value>)",
+          900: "rgb(var(--ink-900) / <alpha-value>)",
+          800: "rgb(var(--ink-800) / <alpha-value>)",
+          700: "rgb(var(--ink-700) / <alpha-value>)",
+        },
+        // "white" = foreground colour (white in dark, near-black in light)
+        white: "rgb(var(--fg) / <alpha-value>)",
+        // always-white, for text/icons on gradient or coloured backgrounds
+        pure: "#ffffff",
+        zinc: {
+          200: "rgb(var(--zinc-200) / <alpha-value>)",
+          300: "rgb(var(--zinc-300) / <alpha-value>)",
+          400: "rgb(var(--zinc-400) / <alpha-value>)",
+          500: "rgb(var(--zinc-500) / <alpha-value>)",
+          600: "rgb(var(--zinc-600) / <alpha-value>)",
         },
         brand: {
           violet: "#8b5cf6",

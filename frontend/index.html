@@ -12,6 +12,15 @@
       rel="stylesheet"
     />
     <title>EagleNex — Think Higher, Fly Further</title>
+    <!-- Apply saved theme before first paint (prevents a flash of the wrong theme) -->
+    <script>
+      try {
+        var t = localStorage.getItem("eaglenex-theme");
+        document.documentElement.dataset.theme = t === "light" ? "light" : "dark";
+      } catch (e) {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
   </head>
   <body class="bg-ink-950">
     <div id="root"></div>

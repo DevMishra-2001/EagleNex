@@ -51,7 +51,7 @@ export default function CTA() {
               <div className="relative grid items-center gap-12 lg:grid-cols-[1.25fr_1fr] lg:gap-16">
                 {/* ---------- Left: pitch + form ---------- */}
                 <div>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-sm font-medium text-emerald-300">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-sm font-medium text-emerald-500">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -74,7 +74,7 @@ export default function CTA() {
                           key="done"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center gap-3 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-6 py-4 text-emerald-200"
+                          className="flex items-center gap-3 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-6 py-4 text-emerald-500"
                         >
                           <Check className="h-5 w-5" /> Thanks! We&apos;ll be in touch within 24 hours.
                         </motion.div>
@@ -130,7 +130,7 @@ export default function CTA() {
                       transition={{ delay: 0.15 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                       className="group/opt flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
                     >
-                      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${o.color} text-white shadow-lg`}>
+                      <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${o.color} text-pure shadow-lg`}>
                         <o.icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
